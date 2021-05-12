@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         response_body['plate'] = parking_details['Plate']
         response_body['parkingLot'] = parking_details['ParkingLot']
 
-        response_body['totalParkedTime'] = parking_time
+        response_body['totalParkedTime'] = str(parking_time)
         response_body['charge'] = str(charge)
 
     else:

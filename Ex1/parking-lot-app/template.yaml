@@ -35,11 +35,11 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ParkingLotApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Description: "API Gateway endpoint URL for Prod stage for Parking Lot function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/parking_lot/"
   ParkingLotFunction:
-    Description: "Hello World Lambda Function ARN"
+    Description: "Parking Lot Lambda Function ARN"
     Value: !GetAtt ParkingLotFunction.Arn
   ParkingLotFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for Parking Lot function"
     Value: !GetAtt ParkingLotFunctionRole.Arn
