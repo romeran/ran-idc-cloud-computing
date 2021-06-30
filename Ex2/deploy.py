@@ -1,4 +1,5 @@
 import base64
+import sys
 
 import boto3
 from botocore import exceptions
@@ -14,19 +15,17 @@ iam = session.client('iam')
 ec2 = session.client('ec2')
 s3 = session.client('s3')
 
-CACHE_INSTANCE_INIT_SCRIPT = """
-#!/bin/bash -x
+CACHE_INSTANCE_INIT_SCRIPT = """#!/bin/bash
 
 sudo apt-get update --yes
-sudo apt-get install --yes --allow-unauthenticated \
-              aws virtualenv python3-pip python3-venv unzip
+sudo apt-get install --yes --allow-unauthenticated awscli virtualenv python3-pip python3-venv unzip
               
 aws s3api get-object --bucket idc-ex2-cache-app-bucket --key cache_app.zip cache_app.zip
 export INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 unzip cache_app.zip
 
 python3 -m venv cache-app-env
-source tutorial-env/bin/activate
+source cache-app-env/bin/activate
 
 cd cache_app
 pip install -r requirements.txt
@@ -184,7 +183,7 @@ def create_instance():
             'Name': 'CacheNodeInstance',
         },
         KeyName='cache-keypair',
-        UserData=base64.b64encode(CACHE_INSTANCE_INIT_SCRIPT.encode('ascii')))
+        UserData=CACHE_INSTANCE_INIT_SCRIPT.encode('ascii'))
 
     return response['Instances'][0]['InstanceId']
 
@@ -220,18 +219,24 @@ def deploy_app():
 
 
 def provision_cache_node():
-    pass
+    instance_id = create_instance()
+    register_instance_in_elb(instance_id)
 
 
-def kill_cache_node():
-    pass
-
-
-def list_cache_node_ids():
+def kill_cache_node(instance_id):
     pass
 
 
 if __name__ == "__main__":
-    print(create_instance())
-    # register_instance_in_elb("i-05b62076406e69011")
-    # upload_cache_app()
+    argument = sys.argv[1]
+
+    if argument == '--deploy':
+        print("Deploy cache app")
+        deploy_app()
+
+    elif argument == '--add-cache-node':
+        provision_cache_node()
+
+    elif argument == '--kill-cache-node':
+        instance_id = sys.argv[2]
+        kill_cache_node(instance_id)
