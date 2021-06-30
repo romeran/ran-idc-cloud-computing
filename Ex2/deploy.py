@@ -184,7 +184,7 @@ def create_instance():
             'Name': 'CacheNodeInstance',
         },
         KeyName='cache-keypair',
-        UserData=base64.b64encode(str.encode(CACHE_INSTANCE_INIT_SCRIPT)))
+        UserData=base64.b64encode(CACHE_INSTANCE_INIT_SCRIPT.encode('ascii')))
 
     return response['Instances'][0]['InstanceId']
 
